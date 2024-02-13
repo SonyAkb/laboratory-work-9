@@ -1,138 +1,123 @@
-#include <iostream>
+п»ї#include <iostream>
 #include <string>
 #include <fstream>
 
 using namespace std;
 
-int add_words_in_mas(string* ptr_mas_words, string row) {
-    int space_1 = 0, space_2; //индекс послелнего пробела
-    int count = 0; //счетчик слов в строке
-    for (int i = 0; i < row.size(); i++) {
-        if (row[i] == 32) { //если к-л символ является пробелом
-            ptr_mas_words[count] = row.substr(space_1, i - space_1); //записываю в массив новое слово
-            space_1 = i + 1; //меняю индекс последнего пробела
-            ++count; //меняю колличество слов в строке
-        }
-    }
-    ptr_mas_words[count] = row.substr(space_1, row.size() - space_1); //последнее слово в строке
-    return count + 1; //колличество слов с строке
-
-    //ptr_mas_words - массив где хранятся все слова текущей строки
-    //row - текущая строка
-}
-
-bool the_same_words(string* ptr, int length) { //проверка одинаковых слов в строке
-    bool flag = false; //сейчас нет одинаковых слов в строке
-    for (int i = 0; i < length && !flag; ++i) {
-        for (int j = i + 1; j < length && !flag; ++j) {
-            if (ptr[i] == ptr[j]) { //если два элемента массива равны, то flag=true
-                flag = true; //в строке есть одинаковые слова
-            }
-        }
-    }
-    return flag; //наличие одинаковых слов в строке
-
-    //ptr - массив где хранятся все слова текущей строки
-    //length - колличество слов в текущей строке
-}
-
-bool is_that_a_digit(char symbol) { //проверяю: символ это цифра или нет
-    bool flag = false; //сейчас цифра не найдена
-    char list_of_numbers[] = { '0','1','2','3','4','5', '6','7','8', '9' };
-    for (int i = 0; i < 10 && !flag; ++i){ //прохожу по списку со всеми цифрами
-        //cout << symbol << ' ';
-        if (symbol == list_of_numbers[i]) flag = true; //цифра найдена
-    }
-    //cout << endl;
-    return flag; //символ это цифра или нет
-    //symbol - какой либо символ
-}
-
-int searching_for_numbers(string* ptr_line, int len, int& max_count, int& index_max_count) {
-    int count;
-    for (int i = 0; i < len; ++i) {
-        count = 0;
-        for (int j = 0; j < ptr_line[i].size(); ++j) {
-            //cout << ptr_line[i][j] << ' ';
-            count += is_that_a_digit(ptr_line[i][j]);
-        }
-        //cout << count << ' ';
-        if (count > max_count) {
-            cout << "Изменений в searching_for_numbers!" << endl;
-            max_count = count; //количество цифр в числе
-            index_max_count = i + 1; //индекс слова с максимальным колличесвом цифр
-        }
-
-    }
-    //cout << endl;
-    return index_max_count;
-
-    //ptr_line - массив со словами в строке
-    //len - количество элементов в массиве
-    //max_count - текущее максимальное количество цифр
-}
-
-void print_mas(string* ptr, int n) { //вывод одномерного запутанного массива
-    for (int i = 0; i < n; ++i) {
-        cout << ptr[i] << "-";
-    }
-    cout << endl;
-}
+int add_words_in_mas(string* ptr_mas_words, string row); //РїСЂРµРѕР±СЂР°Р·СѓСЋ СЃС‚СЂРѕРєСѓ РІ РјР°СЃСЃРёРІ СЃР»РѕРІ СЌС‚РѕР№ СЃС‚СЂРѕРєРё
+bool the_same_words(string* ptr, int length); //РїСЂРѕРІРµСЂРєР° РѕРґРёРЅР°РєРѕРІС‹С… СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ
+bool is_that_a_digit(char symbol); //РїСЂРѕРІРµСЂСЏСЋ: СЃРёРјРІРѕР» - СЌС‚Рѕ С†РёС„СЂР° РёР»Рё РЅРµС‚
+int searching_for_numbers(string* ptr_line, int len, int& max_count, int& index_max_count);
+                        //СЃС‡РёС‚Р°СЋ РєРѕР»Р»РёС‡РµСЃС‚РІРѕ С†РёС„СЂ РІ СЃР»РѕРІРµ
 
 int main() {
     setlocale(LC_ALL, "Russian");
     system("chcp 1251");
     system("cls");
 
-    int world_count, c;
-    int the_ordinal_number_of_the_ord = 0; //порядковый номер слов
+    int the_ordinal_number_of_the_ord = 0; //РїРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ СЃР»РѕРІ
 
     int maximum_of_digits[] = { 0,0 };
     int new_maximum_of_digits[] = { 0,0 };
-    //первый индекс - индекс слова
-    //второй индекс - последнее максимальной количество цифр
+    //РїРµСЂРІС‹Р№ РёРЅРґРµРєСЃ - РёРЅРґРµРєСЃ СЃР»РѕРІР° СЃ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј РєРѕР»-РѕРј С†РёС„СЂ
+    //РІС‚РѕСЂРѕР№ РёРЅРґРµРєСЃ - РїРѕСЃР»РµРґРЅРµРµ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ РєРѕР»РёС‡РµСЃС‚РІРѕ С†РёС„СЂ
     
 
-    ifstream input("F1.txt");
-    ofstream output("F2.txt");
+    ifstream input("F1.txt"); //РІС…РѕРґРЅРѕР№ С„Р°Р№Р»РѕРІС‹Р№ РїРѕС‚РѕРє
+    ofstream output("F2.txt"); //РІС‹С…РѕРґРЅРѕР№ С„Р°Р№Р»РѕРІС‹Р№ РїРѕС‚РѕРє
 
     string line;
 
     while (getline(input, line)) {
-        string all_words_in_line[256]; //массив всех слов в строке
-        int number_of_words = add_words_in_mas(all_words_in_line, line); //колличество слов в строке
-
-
-
+        string all_words_in_line[256]; //РјР°СЃСЃРёРІ РІСЃРµС… СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ
+        int number_of_words = add_words_in_mas(all_words_in_line, line); //РєРѕР»Р»РёС‡РµСЃС‚РІРѕ СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ
 
         searching_for_numbers(all_words_in_line, number_of_words, new_maximum_of_digits[1], new_maximum_of_digits[0]);
 
-        if (new_maximum_of_digits[1] > maximum_of_digits[1]) {
-            cout << "Изменений в цифрах!" << endl;
+        if (new_maximum_of_digits[1] > maximum_of_digits[1]) { //РµСЃР»Рё РЅРѕРІРѕРµ РєРѕР»-Рѕ С†РёС„СЂ Р±РѕР»СЊС€Рµ РїСЂРµРґС‹РґСѓС‰РµРіРѕ
             maximum_of_digits[0] = the_ordinal_number_of_the_ord + new_maximum_of_digits[0];
             maximum_of_digits[1] = new_maximum_of_digits[1];
         }
+        new_maximum_of_digits[1] = 0, new_maximum_of_digits[0] = 0;
 
-
-
-        bool equal_words = the_same_words(all_words_in_line, number_of_words); //есть ли в строке одинаковые слова?
-        if (equal_words) { //если есть одинаковые слова, то добавляю строку в F2
-            output << line << endl;
+        bool equal_words = the_same_words(all_words_in_line, number_of_words); //РµСЃС‚СЊ Р»Рё РІ СЃС‚СЂРѕРєРµ РѕРґРёРЅР°РєРѕРІС‹Рµ СЃР»РѕРІР°?
+        if (equal_words) { //РµСЃР»Рё РµСЃС‚СЊ РѕРґРёРЅР°РєРѕРІС‹Рµ СЃР»РѕРІР°, С‚Рѕ РґРѕР±Р°РІР»СЏСЋ СЃС‚СЂРѕРєСѓ РІ F2
+            output << line << endl; //РґРѕР±Р°РІР»СЏСЋ СЃС‚СЂРѕРєСѓ РІ F2
         }
-        the_ordinal_number_of_the_ord += number_of_words;
-
-        
-
+        the_ordinal_number_of_the_ord += number_of_words; //РїСЂРёР±Р°РІР»СЏСЋ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃР»РѕРІ РІ С‚РµРєСѓС‰РµР№ СЃС‚СЂРѕРєРµ
     }
 
-    //cout << is_that_a_digit('1') << endl;
+    cout << "РР· С„Р°Р№Р»Р° F1 РІ С„Р°Р№Р» F2 СЃРєРѕРїРёСЂРѕРІР°РЅРЅС‹ РІСЃРµ СЃС‚СЂРѕРєРё, РІ РєРѕС‚РѕСЂС‹С… СЃРѕРґРµСЂР¶РёС‚СЃСЏ РЅРµ РјРµРЅРµРµ РґРІСѓС… РѕРґРёРЅР°РєРѕРІС‹С… СЃР»РѕРІ" << endl;
 
-    cout << "Из файла F1 в файл F2 скопированны все строки, в которых содержится не менее двух одинаковых слов" << endl;
-    cout << "Номер слова в котором больше всего цифр " << maximum_of_digits[0] << ' ' << maximum_of_digits[1] << endl;
-
-    input.close(); //закрываю файл
-    output.close();//закрываю файл
+    if (maximum_of_digits[1] != 0) {
+        cout << "РќРѕРјРµСЂ СЃР»РѕРІР° РІ РєРѕС‚РѕСЂРѕРј Р±РѕР»СЊС€Рµ РІСЃРµРіРѕ С†РёС„СЂ: " << maximum_of_digits[0] << endl << "Р’ СЌС‚РѕРј СЃР»РѕРІРµ С†РёС„СЂ: " << maximum_of_digits[1] << endl;
+    }
+    else
+        cout << "Р¤Р°Р№Р» F1 РЅРµ СЃРѕРґРµСЂР¶РёС‚ СЃР»РѕРІ, РІ РєРѕС‚РѕСЂС‹С… Р±С‹Р»Рё Р±С‹ С†РёС„СЂС‹" << endl;
+    
+    input.close(); //Р·Р°РєСЂС‹РІР°СЋ С„Р°Р№Р»
+    output.close();//Р·Р°РєСЂС‹РІР°СЋ С„Р°Р№Р»
     
     return 0;
 }
 
+int add_words_in_mas(string* ptr_mas_words, string row) { //РїСЂРµРѕР±СЂР°Р·СѓСЋ СЃС‚СЂРѕРєСѓ РІ РјР°СЃСЃРёРІ СЃР»РѕРІ СЌС‚РѕР№ СЃС‚СЂРѕРєРё
+    int space_1 = 0, space_2; //РёРЅРґРµРєСЃ РїРѕСЃР»РµР»РЅРµРіРѕ РїСЂРѕР±РµР»Р°
+    int count = 0; //СЃС‡РµС‚С‡РёРє СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ
+    for (int i = 0; i < row.size(); i++) {
+        if (row[i] == 32) { //РµСЃР»Рё Рє-Р» СЃРёРјРІРѕР» СЏРІР»СЏРµС‚СЃСЏ РїСЂРѕР±РµР»РѕРј
+            ptr_mas_words[count] = row.substr(space_1, i - space_1); //Р·Р°РїРёСЃС‹РІР°СЋ РІ РјР°СЃСЃРёРІ РЅРѕРІРѕРµ СЃР»РѕРІРѕ
+            space_1 = i + 1; //РјРµРЅСЏСЋ РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РїСЂРѕР±РµР»Р°
+            ++count; //РјРµРЅСЏСЋ РєРѕР»Р»РёС‡РµСЃС‚РІРѕ СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ
+        }
+    }
+    ptr_mas_words[count] = row.substr(space_1, row.size() - space_1); //РїРѕСЃР»РµРґРЅРµРµ СЃР»РѕРІРѕ РІ СЃС‚СЂРѕРєРµ
+    return count + 1; //РєРѕР»Р»РёС‡РµСЃС‚РІРѕ СЃР»РѕРІ СЃ СЃС‚СЂРѕРєРµ
+    //ptr_mas_words - РјР°СЃСЃРёРІ РіРґРµ С…СЂР°РЅСЏС‚СЃСЏ РІСЃРµ СЃР»РѕРІР° С‚РµРєСѓС‰РµР№ СЃС‚СЂРѕРєРё
+    //row - С‚РµРєСѓС‰Р°СЏ СЃС‚СЂРѕРєР°
+}
+
+bool the_same_words(string* ptr, int length) { //РїСЂРѕРІРµСЂРєР° РѕРґРёРЅР°РєРѕРІС‹С… СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ
+    bool flag = false; //СЃРµР№С‡Р°СЃ РЅРµС‚ РѕРґРёРЅР°РєРѕРІС‹С… СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ
+    for (int i = 0; i < length && !flag; ++i) {
+        for (int j = i + 1; j < length && !flag; ++j) {
+            if (ptr[i] == ptr[j]) { //РµСЃР»Рё РґРІР° СЌР»РµРјРµРЅС‚Р° РјР°СЃСЃРёРІР° СЂР°РІРЅС‹, С‚Рѕ flag=true
+                flag = true; //РІ СЃС‚СЂРѕРєРµ РµСЃС‚СЊ РѕРґРёРЅР°РєРѕРІС‹Рµ СЃР»РѕРІР°
+            }
+        }
+    }
+    return flag; //РЅР°Р»РёС‡РёРµ РѕРґРёРЅР°РєРѕРІС‹С… СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ
+    //ptr - РјР°СЃСЃРёРІ РіРґРµ С…СЂР°РЅСЏС‚СЃСЏ РІСЃРµ СЃР»РѕРІР° С‚РµРєСѓС‰РµР№ СЃС‚СЂРѕРєРё
+    //length - РєРѕР»Р»РёС‡РµСЃС‚РІРѕ СЃР»РѕРІ РІ С‚РµРєСѓС‰РµР№ СЃС‚СЂРѕРєРµ
+}
+
+bool is_that_a_digit(char symbol) { //РїСЂРѕРІРµСЂСЏСЋ: СЃРёРјРІРѕР» - СЌС‚Рѕ С†РёС„СЂР° РёР»Рё РЅРµС‚
+    bool flag = false; //СЃРµР№С‡Р°СЃ С†РёС„СЂР° РЅРµ РЅР°Р№РґРµРЅР°
+    char list_of_numbers[] = { '0','1','2','3','4','5', '6','7','8', '9' };
+    for (int i = 0; i < 10 && !flag; ++i) { //РїСЂРѕС…РѕР¶Сѓ РїРѕ СЃРїРёСЃРєСѓ СЃРѕ РІСЃРµРјРё С†РёС„СЂР°РјРё
+        if (symbol == list_of_numbers[i]) flag = true; //С†РёС„СЂР° РЅР°Р№РґРµРЅР°
+    }
+    return flag; //СЃРёРјРІРѕР» СЌС‚Рѕ С†РёС„СЂР° РёР»Рё РЅРµС‚
+    //symbol - РєР°РєРѕР№ Р»РёР±Рѕ СЃРёРјРІРѕР»
+}
+
+int searching_for_numbers(string* ptr_line, int len, int& max_count, int& index_max_count) {
+    //СЃС‡РёС‚Р°СЋ РєРѕР»Р»РёС‡РµСЃС‚РІРѕ С†РёС„СЂ РІ СЃР»РѕРІРµ
+    int count; //РєРѕР»Р»РёС‡РµСЃС‚РІРѕ С†РёС„СЂ РІ СЃР»РѕРІРµ
+    for (int i = 0; i < len; ++i) { //РїРµСЂРµС…РѕРґ РїРѕ СЃР»РѕРІР°Рј РІ РјР°СЃСЃРёРІРµ СЃР»РѕРІ СЃС‚СЂРѕРєРё
+        count = 0; //РєРѕР»Р»РёС‡РµСЃС‚РІРѕ С†РёС„СЂ РІ РЅРѕРІРѕРј СЃР»РѕРІРµ
+        for (int j = 0; j < ptr_line[i].size(); ++j) { //РїРµСЂРµС…РѕРґ РїРѕ Р±СѓРєРІР°Рј РІ РєРѕРЅРєСЂРµС‚РЅРѕРј СЃР»РѕРІРµ
+            count += is_that_a_digit(ptr_line[i][j]); //РµСЃР»Рё С†РёС„СЂР° РЅР°Р№РґРµРЅР°, С‚Рѕ РїСЂРёР±Р°РІРёС‚СЃСЏ 1
+        }
+        if (count > max_count) { //РµСЃР»Рё РЅРѕРІРѕРµ РєРѕР»-Рѕ С†РёС„СЂ Р±РѕР»СЊС€Рµ РїСЂРµРґС‹РґСѓС‰РµРіРѕ РЅР°РёР±РѕР»СЊС€РµРіРѕ
+            max_count = count; //РєРѕР»РёС‡РµСЃС‚РІРѕ С†РёС„СЂ РІ С‡РёСЃР»Рµ
+            index_max_count = i + 1; //РќРћРњР•Р  СЃР»РѕРІР° СЃ РјР°РєСЃРёРјР°Р»СЊРЅС‹Рј РєРѕР»Р»РёС‡РµСЃРІРѕРј С†РёС„СЂ
+        }
+    }
+    return index_max_count;
+    //ptr_line - РјР°СЃСЃРёРІ СЃРѕ СЃР»РѕРІР°РјРё РІ СЃС‚СЂРѕРєРµ
+    //len - РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ РјР°СЃСЃРёРІРµ
+    //max_count - С‚РµРєСѓС‰РµРµ РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С†РёС„СЂ
+    //max_count С‚РµРєСѓС‰РµРµ РјР°РєСЃРёРјР°Р»СЊРЅРѕР№ РєРѕР»-Рѕ С†РёС„СЂ РІ СЃР»РѕРІРµ
+    //index_max_count РЅРѕРјРµСЂ РЅРµРѕР±С…РѕРґРёРјРѕРіРѕ СЃР»РѕРІР°  
+}
