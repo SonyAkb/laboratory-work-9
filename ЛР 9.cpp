@@ -1,13 +1,12 @@
 ﻿#include <iostream>
 #include <string>
 #include <fstream>
-
 using namespace std;
 
 int add_words_in_mas(string* ptr_mas_words, string row); //преобразую строку в массив слов этой строки
 bool the_same_words(string* ptr, int length); //проверка одинаковых слов в строке
 bool is_that_a_digit(char symbol); //проверяю: символ - это цифра или нет
-int searching_for_numbers(string* ptr_line, int len, int& max_count, int& index_max_count);
+void searching_for_numbers(string* ptr_line, int len, int& max_count, int& index_max_count, int numbering);
                         //считаю колличество цифр в слове
 
 int main() {
@@ -18,10 +17,8 @@ int main() {
     int the_ordinal_number_of_the_ord = 0; //порядковый номер слов
 
     int maximum_of_digits[] = { 0,0 };
-    int new_maximum_of_digits[] = { 0,0 };
     //первый индекс - индекс слова с максимальным кол-ом цифр
     //второй индекс - последнее максимальной количество цифр
-    
 
     ifstream input("F1.txt"); //входной файловый поток
     ofstream output("F2.txt"); //выходной файловый поток
@@ -32,13 +29,7 @@ int main() {
         string all_words_in_line[256]; //массив всех слов в строке
         int number_of_words = add_words_in_mas(all_words_in_line, line); //колличество слов в строке
 
-        searching_for_numbers(all_words_in_line, number_of_words, new_maximum_of_digits[1], new_maximum_of_digits[0]);
-
-        if (new_maximum_of_digits[1] > maximum_of_digits[1]) { //если новое кол-о цифр больше предыдущего
-            maximum_of_digits[0] = the_ordinal_number_of_the_ord + new_maximum_of_digits[0];
-            maximum_of_digits[1] = new_maximum_of_digits[1];
-        }
-        new_maximum_of_digits[1] = 0, new_maximum_of_digits[0] = 0;
+        searching_for_numbers(all_words_in_line, number_of_words, maximum_of_digits[1], maximum_of_digits[0], the_ordinal_number_of_the_ord);
 
         bool equal_words = the_same_words(all_words_in_line, number_of_words); //есть ли в строке одинаковые слова?
         if (equal_words) { //если есть одинаковые слова, то добавляю строку в F2
@@ -52,8 +43,7 @@ int main() {
     if (maximum_of_digits[1] != 0) {
         cout << "Номер слова в котором больше всего цифр: " << maximum_of_digits[0] << endl << "В этом слове цифр: " << maximum_of_digits[1] << endl;
     }
-    else
-        cout << "Файл F1 не содержит слов, в которых были бы цифры" << endl;
+    else cout << "Файл F1 не содержит слов, в которых были бы цифры" << endl;
     
     input.close(); //закрываю файл
     output.close();//закрываю файл
@@ -101,7 +91,7 @@ bool is_that_a_digit(char symbol) { //проверяю: символ - это ц
     //symbol - какой либо символ
 }
 
-int searching_for_numbers(string* ptr_line, int len, int& max_count, int& index_max_count) {
+void searching_for_numbers(string* ptr_line, int len, int& max_count, int& index_max_count, int numbering) {
     //считаю колличество цифр в слове
     int count; //колличество цифр в слове
     for (int i = 0; i < len; ++i) { //переход по словам в массиве слов строки
@@ -111,13 +101,13 @@ int searching_for_numbers(string* ptr_line, int len, int& max_count, int& index_
         }
         if (count > max_count) { //если новое кол-о цифр больше предыдущего наибольшего
             max_count = count; //количество цифр в числе
-            index_max_count = i + 1; //НОМЕР слова с максимальным колличесвом цифр
+            index_max_count = numbering + i + 1; //НОМЕР слова с максимальным колличесвом цифр
         }
     }
-    return index_max_count;
     //ptr_line - массив со словами в строке
     //len - количество элементов в массиве
     //max_count - текущее максимальное количество цифр
     //max_count текущее максимальной кол-о цифр в слове
-    //index_max_count номер необходимого слова  
+    //index_max_count - номер необходимого слова  
+    //numbering - текущее кол-о слов
 }
