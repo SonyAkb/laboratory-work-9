@@ -14,8 +14,10 @@ int main() {
     system("chcp 1251");
     system("cls");
 
-    int the_ordinal_number_of_the_ord = 0; //порядковый номер слов
+    bool equal_words;
+    int number_of_words;
 
+    int the_ordinal_number_of_the_ord = 0; //порядковый номер слов
     int maximum_of_digits[] = { 0,0 };
     //первый индекс - индекс слова с максимальным кол-ом цифр
     //второй индекс - последнее максимальной количество цифр
@@ -27,11 +29,11 @@ int main() {
 
     while (getline(input, line)) {
         string all_words_in_line[256]; //массив всех слов в строке
-        int number_of_words = add_words_in_mas(all_words_in_line, line); //колличество слов в строке
+        number_of_words = add_words_in_mas(all_words_in_line, line); //количество слов в строке
 
         searching_for_numbers(all_words_in_line, number_of_words, maximum_of_digits[1], maximum_of_digits[0], the_ordinal_number_of_the_ord);
 
-        bool equal_words = the_same_words(all_words_in_line, number_of_words); //есть ли в строке одинаковые слова?
+        equal_words = the_same_words(all_words_in_line, number_of_words); //есть ли в строке одинаковые слова?
         if (equal_words) { //если есть одинаковые слова, то добавляю строку в F2
             output << line << endl; //добавляю строку в F2
         }
@@ -52,16 +54,16 @@ int main() {
 }
 
 int add_words_in_mas(string* ptr_mas_words, string row) { //преобразую строку в массив слов этой строки
-    int space_1 = 0, space_2; //индекс послелнего пробела
+    int space = 0; //индекс послелнего пробела
     int count = 0; //счетчик слов в строке
     for (int i = 0; i < row.size(); i++) {
         if (row[i] == 32) { //если к-л символ является пробелом
-            ptr_mas_words[count] = row.substr(space_1, i - space_1); //записываю в массив новое слово
-            space_1 = i + 1; //меняю индекс последнего пробела
+            ptr_mas_words[count] = row.substr(space, i - space); //записываю в массив новое слово
+            space = i + 1; //меняю индекс последнего пробела
             ++count; //меняю колличество слов в строке
         }
     }
-    ptr_mas_words[count] = row.substr(space_1, row.size() - space_1); //последнее слово в строке
+    ptr_mas_words[count] = row.substr(space, row.size() - space); //последнее слово в строке
     return count + 1; //колличество слов с строке
     //ptr_mas_words - массив где хранятся все слова текущей строки
     //row - текущая строка
